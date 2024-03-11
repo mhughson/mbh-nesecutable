@@ -120,7 +120,7 @@ void CalculateWindowMetrics(int w, int h)
 	ac.wm.db_h = h - 2 * ac.wm.padding;
 
 	const int min_db_w = 200, min_db_h = 400;
-	if (ac.wm.db_w < min_db_w || ac.wm.db_h < min_db_h)
+	if (ac.wm.db_w < min_db_w || ac.wm.db_h < min_db_h || !ac.m_settings.allow_debug_panel)
 	{
 		ac.draw_debug_view = false;
 
@@ -200,6 +200,12 @@ void InitApplication(char* rom)
 {
 	char error_string[256];
 	ac.nes = malloc(sizeof(Nes));
+
+	// By default try to load Super Sunny World.
+	if (rom == NULL)
+	{
+		rom = "sunny.nes";
+	}
 
 	if (rom)
 	{
@@ -311,6 +317,22 @@ void SetFullScreen(bool b)
 	SDL_SetWindowFullscreen(ac.win, b ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
+void ToggleFullScreenSetting()
+{
+	ac.m_settings.fullscreen = !ac.m_settings.fullscreen;
+	SetFullScreen(ac.m_settings.fullscreen);
+}
+
+void ToggleDebugPanel()
+{
+	ac.m_settings.allow_debug_panel = !ac.m_settings.allow_debug_panel;
+}
+
+void SetHidePanel(bool b)
+{
+	// todo
+}
+
 // Whenever a pattern table has been bank switched, the pointer the renderer has to the pattern table
 // will be invalid, backend code will call this function to update that pointer to the new pattern table
 void SetPatternTable(uint8_t* table_data, int side)
@@ -342,7 +364,11 @@ void DrawViews()
 
 	int w, h;
 	SDL_GetWindowSize(ac.win, &w, &h);
-	if (w != ac.wm.width || h != ac.wm.height)
+
+	// [mhughson] For now always recalucate the window because the user might have
+	//			  hit F9 to toggle the debug display, and this needs to run in order
+	//			  to visualize the change.
+	//if (w != ac.wm.width || h != ac.wm.height)
 	{
 		CalculateWindowMetrics(w, h);
 	}
@@ -453,10 +479,21 @@ void SetNesKeys()
 	StartupOptions* opt = GetStartupOptions();
 
 	Keys keyboard_keys, controller_keys, keys;
+	SDL_Keymod mod_state = SDL_GetModState();
 
 	keyboard_keys.keys.A = state[opt->key_A];
 	keyboard_keys.keys.B = state[opt->key_B];
-	keyboard_keys.keys.Start = state[opt->key_start]; // Enter key
+
+	// Only allow the "Start" button if the user is not holding Alt because
+	// Start + ALT is toggle fullscreen.
+	if (!(mod_state & KMOD_ALT))
+	{
+		keyboard_keys.keys.Start = state[opt->key_start]; // Enter key
+	}
+	else
+	{
+		keyboard_keys.keys.Start = 0;
+	}
 	keyboard_keys.keys.Select = state[opt->key_select];
 	keyboard_keys.keys.Up = state[opt->key_up];
 	keyboard_keys.keys.Down = state[opt->key_down];
@@ -505,6 +542,30 @@ void ApplicationGameLoop()
 			else if (event.type == SDL_CONTROLLERDEVICEREMOVED)
 			{
 				OnControllerDeviceRemoved(&event.cdevice);
+			}
+			else if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_RETURN:
+					{
+						if (event.key.keysym.mod & KMOD_ALT)
+						{
+							ToggleFullScreenSetting();
+						}
+						break;
+					}
+					case SDLK_F11:
+					{
+						ToggleFullScreenSetting();
+						break;
+					}
+					case SDLK_F9:
+					{
+						ToggleDebugPanel();
+						break;
+					}
+				}
 			}
 			else if (event.type == SDL_KEYDOWN && ac.m_settings.mode == MODE_STEP_THROUGH)
 			{

@@ -140,6 +140,12 @@ void DrawSettings(ChannelEnableModel* ch, NesScreenModel* scr, SettingsModel* se
 	}
 	span.y += padding + gm->checkbox_size;
 
+	if (GuiAddCheckbox("Draw Debug Panel", span.x, span.y, &settings->allow_debug_panel))
+	{
+		// todo
+	}
+	span.y += padding + gm->checkbox_size;
+
 	if (GuiAddCheckbox("Scanline Effect", span.x, span.y, &settings->scanline))
 	{
 		glBindTexture(GL_TEXTURE_2D, scr->scr.handle);

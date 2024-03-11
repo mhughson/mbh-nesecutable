@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(NES-Emulator)
+project(nesecutable)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release") 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

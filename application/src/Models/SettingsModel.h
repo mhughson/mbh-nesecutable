@@ -16,6 +16,9 @@ typedef struct
 	bool fullscreen;
 	bool draw_grid;
 	bool scanline;
+
+	// Should the app try to draw the debug panel (if there is space)?
+	bool allow_debug_panel;
 } SettingsModel;
 
 #endif

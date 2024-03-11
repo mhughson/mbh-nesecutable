@@ -47,7 +47,9 @@ Keys PollGameController(GameController* game_controller)
 
 	SDL_GameController* gc = game_controller->sdl_game_controller;
 	ret.keys.A = SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_A);
+	ret.keys.A |= SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_Y);
 	ret.keys.B = SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_B);
+	ret.keys.B |= SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_X);
 	ret.keys.Start = SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_START);
 	ret.keys.Select = SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_BACK);
 	ret.keys.Up = SDL_GameControllerGetButton(gc, SDL_CONTROLLER_BUTTON_DPAD_UP);
