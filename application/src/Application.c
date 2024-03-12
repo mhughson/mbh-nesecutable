@@ -242,7 +242,7 @@ void InitApplication(char* rom)
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
 
-	ac.win = SDL_CreateWindow("NES Emulator - By Jun Lim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, starting_w, starting_h, flags);
+	ac.win = SDL_CreateWindow("Super Sunny World", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, starting_w, starting_h, flags);
 	if (!ac.win)
 	{
 		printf("Could not create window\n");
@@ -543,30 +543,6 @@ void ApplicationGameLoop()
 			{
 				OnControllerDeviceRemoved(&event.cdevice);
 			}
-			else if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-					case SDLK_RETURN:
-					{
-						if (event.key.keysym.mod & KMOD_ALT)
-						{
-							ToggleFullScreenSetting();
-						}
-						break;
-					}
-					case SDLK_F11:
-					{
-						ToggleFullScreenSetting();
-						break;
-					}
-					case SDLK_F9:
-					{
-						ToggleDebugPanel();
-						break;
-					}
-				}
-			}
 			else if (event.type == SDL_KEYDOWN && ac.m_settings.mode == MODE_STEP_THROUGH)
 			{
 				switch (event.key.keysym.sym)
@@ -580,6 +556,30 @@ void ApplicationGameLoop()
 				case SDLK_p:
 					clock_nes_cycle(ac.nes);
 					break;
+				}
+			}
+			else if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_RETURN:
+				{
+					if (event.key.keysym.mod & KMOD_ALT)
+					{
+						ToggleFullScreenSetting();
+					}
+					break;
+				}
+				case SDLK_F11:
+				{
+					ToggleFullScreenSetting();
+					break;
+				}
+				case SDLK_F9:
+				{
+					ToggleDebugPanel();
+					break;
+				}
 				}
 			}
 			else if (event.type == SDL_QUIT)
@@ -604,5 +604,9 @@ void ApplicationGameLoop()
 		{
 			sleep_micro((uint64_t)(16666 - elapsed));
 		}
+		//else
+		//{
+		//	printf("Lame Frame Detected %f\n", elapsed);
+		//}
 	}
 }

@@ -7,6 +7,11 @@
 #define BUF_SIZE 2048
 #define BUF_COUNT 3
 
+// seems to reduce hitching, but still hitting cases with no buffer ready,
+// so I'm not sure.
+//#define BUF_SIZE 256
+//#define BUF_COUNT 24
+
 typedef struct
 {
 	// For DC cutoff filter
@@ -78,6 +83,10 @@ void audio_callback(void* userdata, Uint8* stream, int len)
 	else
 	{
 		memset(stream, 0, len);
+
+		// Audio hitches when this is hit. It seems like WriteSamples is not writing buffers 
+		// as fast as audio_callback can consume them, and as a result the writing get stuck waiting for a free buffer.
+		printf("Clearing Audio Stream\n");
 	}
 }
 
